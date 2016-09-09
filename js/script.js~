@@ -1,6 +1,7 @@
 var g_Interval = 1;
 var g_Timer;
 var running = false;
+var restaurant_num = 30;
 var results;
 var auth = {
         consumerKey: "HXCumKrNMMFm_xJvw2JjLA",
@@ -22,7 +23,7 @@ $(document).ready(function() {
     parameters = [];
     parameters.push(['term', terms]);
     parameters.push(['location', near]);
-    parameters.push(['limits', 30]);
+    parameters.push(['limit', 30]);
     parameters.push(['callback', 'cb']);
     parameters.push(['oauth_consumer_key', auth.consumerKey]);
     parameters.push(['oauth_consumer_secret', auth.consumerSecret]);
@@ -49,13 +50,14 @@ $(document).ready(function() {
         'success' : function(data, textStats, XMLHttpRequest) {
             //console.log(data);
 	    //callback(data);
-	    	results = data;
+	    results = data;
         }
     });
 
     console.log(results);
 })
 function beginRndNum(trigger){
+	console.log(results);
 	if(running){
 		running = false;
 		clearTimeout(g_Timer);
@@ -72,16 +74,11 @@ function beginRndNum(trigger){
 }
 
 function updateRndNum(){
-	var index = Math.floor(Math.random()*results['businesses'].length);
-	var business = results['businesses'][index];
-	var name = business['name'];
-	var destination = getAddress(business['location']['display_address']);
-	//console.log(destination);
-	var category = getCategory(business['categories']);
-	//console.log(category);
-	$('#ResultNum').html(name);
+	var index = Math.floor(Math.random()*restaurant_num);
+	var result = restaurants[index];
+	var destination = addresses[index];
+	$('#ResultNum').html(result);
 	$('#Address').html(destination);
-	$('#Categories').html(category);
 }
 
 function beginTimer(){
@@ -91,23 +88,4 @@ function beginTimer(){
 function beat() {
 	g_Timer = setTimeout(beat, g_Interval);
 	updateRndNum();
-}
-
-function getAddress(addressblock) {
-	var parse = "";
-	for (var i = 0; i < addressblock.length; i++) {
-		parse += addressblock[i] + ", ";
-	}
-
-	return parse;
-}
-
-function getCategory(categoryBlock) {
-	var parse = "";
-
-	for (var i = 0; i < categoryBlock.length; i++) {
-		parse += categoryBlock[i][0] + ", ";
-	}
-
-	return parse;
 }
